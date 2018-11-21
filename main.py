@@ -11,6 +11,7 @@ import sys
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import json
 import touchphat
+from threading import Lock
 
 CHECK_SPAN = 10
 THING_NAME = 'kishinami'
@@ -19,6 +20,9 @@ ROOTCA = '/home/pi/AmazonRootCA1.pem'
 PRIVATE = '/home/pi/b1ad4ae9cd-private.pem.key'
 CERT = '/home/pi/b1ad4ae9cd-certificate.pem.crt'
 TOPIC = 'button/'+THING_NAME+'/release'
+
+
+lock = Lock()
 
 def animation():
     touchphat.all_off()
