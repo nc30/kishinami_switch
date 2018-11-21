@@ -10,6 +10,7 @@ import os
 import sys
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import json
+import touchphat
 
 CHECK_SPAN = 10
 THING_NAME = 'kishinami'
@@ -17,7 +18,35 @@ ENDPOINT = 'a3gt2cb172okvl-ats.iot.ap-northeast-1.amazonaws.com'
 ROOTCA = '/home/pi/AmazonRootCA1.pem'
 PRIVATE = '/home/pi/b1ad4ae9cd-private.pem.key'
 CERT = '/home/pi/b1ad4ae9cd-certificate.pem.crt'
+TOPIC = 'button/'+THING_NAME+'/release'
 
+def animation():
+    touchphat.all_off()
+    for i in range(1, 7):
+        touchphat.led_on(i)
+        time.sleep(0.05)
+    for i in range(1, 7):
+        touchphat.led_off(i)
+        time.sleep(0.05)
+
+def blink(key):
+    touchphat.all_off()
+    for i in range(0, 3):
+        touchphat.led_off(key)
+        time.sleep(0.1)
+        touchphat.led_on(key)
+        time.sleep(0.1)
+    touchphat.all_off()
+
+
+@touchphat.on_release(['Back','A', 'B', 'C', 'D','Enter'])
+def handle_touch(event):
+    with lock:
+        client.publish(
+                topic=TOPIC,
+                payload=event.name
+            )
+        blink(event.name)
 
 def cb(client, userdata, message):
     r = json.loads(message.payload.decode('utf-8'))
@@ -32,6 +61,8 @@ if __name__ == '__main__':
     from logging import StreamHandler, DEBUG
     logger.setLevel(DEBUG)
     logger.addHandler(StreamHandler(stream=sys.stdout))
+
+    animation()
 
     client = AWSIoTMQTTClient(THING_NAME)
     client.configureEndpoint(ENDPOINT, 8883)
