@@ -47,8 +47,9 @@ def blink(key):
 def handle_touch(event):
     with lock:
         client.publish(
-                topic=TOPIC,
-                payload=event.name
+                TOPIC,
+                event.name,
+                1
             )
         blink(event.name)
 
