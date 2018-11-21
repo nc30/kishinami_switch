@@ -1,0 +1,13 @@
+{
+  "name": "kishinami",
+  "version": "0.0.0",
+  "description": "kishinami",
+  "main": "main.py",
+  "author": "nc30",
+  "license": "GPL",
+  "language":"python",
+  "scripts": {
+     "start": "python3 main.py"
+    },
+   "dependency": null
+}
