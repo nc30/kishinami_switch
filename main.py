@@ -9,6 +9,7 @@ import datetime
 import os
 import sys
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
+from AWSIoTPythonSDK.exception import AWSIoTExceptions
 import json
 import touchphat
 from threading import Lock
@@ -46,12 +47,16 @@ def blink(key):
 @touchphat.on_release(['Back','A', 'B', 'C', 'D','Enter'])
 def handle_touch(event):
     with lock:
-        client.publish(
-                TOPIC,
-                event.name,
-                1
-            )
-        blink(event.name)
+        try:
+            client.publish(
+                    TOPIC,
+                    event.name,
+                    1
+                )
+            blink(event.name)
+        except AWSIoTExceptions.publishTimeoutException:
+            pass
+
 
 def cb(client, userdata, message):
     r = json.loads(message.payload.decode('utf-8'))
@@ -77,7 +82,7 @@ if __name__ == '__main__':
     client.configureOfflinePublishQueueing(-1)
     client.configureDrainingFrequency(2)
     client.configureConnectDisconnectTimeout(300)
-    client.configureMQTTOperationTimeout(10)
+    client.configureMQTTOperationTimeout(1)
 
     client.subscribe('$aws/things/'+THING_NAME+'/shadow/update/delta', 1, cb)
     client.connect(60)
@@ -95,8 +100,7 @@ if __name__ == '__main__':
 
             client.publish('$aws/things/'+THING_NAME+'/shadow/update', json.dumps(shadow), 1)
 
-        except IOError:
-            # this is connection error to enviro phat
+        except AWSIoTExceptions.publishTimeoutException:
             time.sleep(CHECK_SPAN)
             continue
 
