@@ -50,7 +50,11 @@ def handle_touch(event):
         try:
             client.publish(
                     TOPIC,
-                    event.name,
+                    json.dumps({
+                        "name": THING_NAME,
+                        "satate": "keypress",
+                        "button": event.name
+                    }),
                     1
                 )
             blink(event.name)
