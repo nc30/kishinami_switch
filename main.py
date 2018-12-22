@@ -68,7 +68,7 @@ def handle_mode(event):
                     TOPIC,
                     json.dumps({
                         "name": THING_NAME,
-                        "satate": "modechange",
+                        "state": "modechange",
                         "button": event.name
                     }),
                     1
@@ -87,7 +87,7 @@ def handle_touch(event):
                     TOPIC,
                     json.dumps({
                         "name": THING_NAME,
-                        "satate": "keypress",
+                        "state": "keypress",
                         "mode": MODE,
                         "button": event.name
                     }),
