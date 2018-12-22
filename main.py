@@ -46,7 +46,10 @@ def animation():
         time.sleep(0.05)
 
 def blink(key):
-    touchphat.all_off()
+    touchphat.led_off('A')
+    touchphat.led_off('B')
+    touchphat.led_off('C')
+    touchphat.led_off('D')
     for i in range(0, 3):
         touchphat.led_off(key)
         time.sleep(0.1)
