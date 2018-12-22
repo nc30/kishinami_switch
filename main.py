@@ -22,8 +22,19 @@ PRIVATE = '/home/pi/e15c31a340-private.pem.key'
 CERT = '/home/pi/e15c31a340-certificate.pem.crt'
 TOPIC = 'button/'+THING_NAME+'/release'
 
+MODE = 'add'
 
 lock = Lock()
+
+def mode_change(mode='add'):
+    if mode == 'add':
+        MODE = 'add'
+        touchphat.led_alloff()
+        touchphat.led_on('Enter')
+    elif mode == 'remove':
+        MODE = 'remove'
+        touchphat.led_alloff()
+        touchphat.led_on('Back')
 
 def animation():
     touchphat.all_off()
@@ -41,10 +52,31 @@ def blink(key):
         time.sleep(0.1)
         touchphat.led_on(key)
         time.sleep(0.1)
-    touchphat.all_off()
+    touchphat.led_off('A')
+    touchphat.led_off('B')
+    touchphat.led_off('C')
+    touchphat.led_off('D')
 
+@touchphat.on_release(['Back', 'Enter'])
+def handle_mode(event):
+    with lock:
+        try:
+            client.publish(
+                    TOPIC,
+                    json.dumps({
+                        "name": THING_NAME,
+                        "satate": "modechange",
+                        "button": event.name
+                    }),
+                    1
+                )
+            mode = 'add' if event.name == 'Enter' else 'remove'
+            mode_change(mode)
+        except AWSIoTExceptions.publishTimeoutException:
+            pass
+    
 
-@touchphat.on_release(['Back','A', 'B', 'C', 'D','Enter'])
+@touchphat.on_release(['A', 'B', 'C', 'D'])
 def handle_touch(event):
     with lock:
         try:
@@ -53,6 +85,7 @@ def handle_touch(event):
                     json.dumps({
                         "name": THING_NAME,
                         "satate": "keypress",
+                        "mode": MODE,
                         "button": event.name
                     }),
                     1
@@ -77,6 +110,7 @@ if __name__ == '__main__':
     logger.addHandler(StreamHandler(stream=sys.stdout))
 
     animation()
+    mode_change('add')
 
     client = AWSIoTMQTTClient(THING_NAME)
     client.configureEndpoint(ENDPOINT, 8883)
