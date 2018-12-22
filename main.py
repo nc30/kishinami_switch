@@ -29,11 +29,11 @@ lock = Lock()
 def mode_change(mode='add'):
     if mode == 'add':
         MODE = 'add'
-        touchphat.led_alloff()
+        touchphat.all_off()
         touchphat.led_on('Enter')
     elif mode == 'remove':
         MODE = 'remove'
-        touchphat.led_alloff()
+        touchphat.all_off()
         touchphat.led_on('Back')
 
 def animation():
