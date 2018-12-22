@@ -18,8 +18,8 @@ CHECK_SPAN = 10
 THING_NAME = 'kishinami'
 ENDPOINT = 'a3gt2cb172okvl-ats.iot.ap-northeast-1.amazonaws.com'
 ROOTCA = '/home/pi/AmazonRootCA1.pem'
-PRIVATE = '/home/pi/b1ad4ae9cd-private.pem.key'
-CERT = '/home/pi/b1ad4ae9cd-certificate.pem.crt'
+PRIVATE = '/home/pi/e15c31a340-private.pem.key'
+CERT = '/home/pi/e15c31a340-certificate.pem.crt'
 TOPIC = 'button/'+THING_NAME+'/release'
 
 
