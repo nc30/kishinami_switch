@@ -23,7 +23,7 @@ CERT = '/home/pi/e15c31a340-certificate.pem.crt'
 TOPIC = 'button/'+THING_NAME+'/release'
 
 MODE = 'add'
-key_vals['A', 'B', 'C', 'D']
+key_vals = ['A', 'B', 'C', 'D']
 
 lock = Lock()
 
@@ -130,10 +130,8 @@ def delta_function(client, userdata, message):
         pass
 
 
-if __name__ == '__main__':
-    from logging import StreamHandler, DEBUG
-    logger.setLevel(DEBUG)
-    logger.addHandler(StreamHandler(stream=sys.stdout))
+
+def main():
 
     animation()
     mode_change('add')
@@ -173,3 +171,20 @@ if __name__ == '__main__':
             logger.exception(e)
 
         time.sleep(CHECK_SPAN)
+
+if __name__ == '__main__':
+    from logging import StreamHandler, DEBUG
+    logger.setLevel(DEBUG)
+    logger.addHandler(StreamHandler(stream=sys.stdout))
+
+    try:
+        main()
+
+    except KeyboardInterrupt:
+        pass
+
+    except Exception as e:
+        logger.exception(e)
+
+    finally:
+        touchphat.all_off()
