@@ -27,6 +27,7 @@ MODE = 'add'
 lock = Lock()
 
 def mode_change(mode='add'):
+    global MODE
     if mode == 'add':
         MODE = 'add'
         touchphat.all_off()
@@ -35,6 +36,7 @@ def mode_change(mode='add'):
         MODE = 'remove'
         touchphat.all_off()
         touchphat.led_on('Back')
+
 
 def animation():
     touchphat.all_off()
@@ -64,17 +66,18 @@ def blink(key):
 def handle_mode(event):
     with lock:
         try:
+            mode = 'add' if event.name == 'Enter' else 'remove'
+            mode_change(mode)
             client.publish(
                     TOPIC,
                     json.dumps({
                         "name": THING_NAME,
                         "state": "modechange",
-                        "button": event.name
+                        "button": event.name,
+                        "mode": MODE
                     }),
                     1
                 )
-            mode = 'add' if event.name == 'Enter' else 'remove'
-            mode_change(mode)
         except AWSIoTExceptions.publishTimeoutException:
             pass
     
