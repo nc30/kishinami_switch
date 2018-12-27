@@ -24,6 +24,7 @@ TOPIC = 'button/'+THING_NAME+'/release'
 
 MODE = 'add'
 key_vals = ['A', 'B', 'C', 'D']
+client = None
 
 lock = Lock()
 
@@ -132,6 +133,7 @@ def delta_function(client, userdata, message):
 
 
 def main():
+    global client
 
     animation()
     mode_change('add')
