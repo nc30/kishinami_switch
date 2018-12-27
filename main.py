@@ -102,6 +102,18 @@ def handle_touch(event):
 
 
 def cb(client, userdata, message):
+    if message.topic == '$aws/things/'+THING_NAME+'/shadow/update/delta':
+        delta_function(client, userdata, message)
+    elif message.topic == 'cmnd/'+THING_NAME+'/result':
+        result_function(client, userdata, message)
+
+
+def result_function(client, userdata, message):
+    r = json.loads(message.payload.decode('utf-8'))
+    print(r)
+
+
+def delta_function(client, userdata, message):
     r = json.loads(message.payload.decode('utf-8'))
 
     try:
@@ -109,6 +121,7 @@ def cb(client, userdata, message):
         CHECK_SPAN = int(r['state']['check_span'])
     except KeyError:
         pass
+
 
 if __name__ == '__main__':
     from logging import StreamHandler, DEBUG
@@ -129,6 +142,7 @@ if __name__ == '__main__':
     client.configureMQTTOperationTimeout(1)
 
     client.subscribe('$aws/things/'+THING_NAME+'/shadow/update/delta', 1, cb)
+    client.subscribe('cmnd/'+THING_NAME+'/#', 1, cb)
     client.connect(60)
 
     while True:
