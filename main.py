@@ -23,6 +23,7 @@ CERT = '/home/pi/e15c31a340-certificate.pem.crt'
 TOPIC = 'button/'+THING_NAME+'/release'
 
 MODE = 'add'
+key_vals['A', 'B', 'C', 'D']
 
 lock = Lock()
 
@@ -54,13 +55,14 @@ def blink(key):
     touchphat.led_off('D')
     for i in range(0, 3):
         touchphat.led_off(key)
-        time.sleep(0.1)
+        time.sleep(0.7)
         touchphat.led_on(key)
-        time.sleep(0.1)
+        time.sleep(0.7)
     touchphat.led_off('A')
     touchphat.led_off('B')
     touchphat.led_off('C')
     touchphat.led_off('D')
+
 
 @touchphat.on_release(['Back', 'Enter'])
 def handle_mode(event):
@@ -102,15 +104,20 @@ def handle_touch(event):
 
 
 def cb(client, userdata, message):
-    if message.topic == '$aws/things/'+THING_NAME+'/shadow/update/delta':
-        delta_function(client, userdata, message)
-    elif message.topic == 'cmnd/'+THING_NAME+'/result':
-        result_function(client, userdata, message)
+    try:
+        if message.topic == '$aws/things/'+THING_NAME+'/shadow/update/delta':
+            delta_function(client, userdata, message)
+        elif message.topic == 'cmnd/'+THING_NAME+'/result':
+            result_function(client, userdata, message)
+    except Exception as e:
+        logger.exception(e)
+        return
 
 
 def result_function(client, userdata, message):
     r = json.loads(message.payload.decode('utf-8'))
-    print(r)
+    if r['result'] == 'success':
+        blink(key_vals[r['change']['key']])
 
 
 def delta_function(client, userdata, message):
