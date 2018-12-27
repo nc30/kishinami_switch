@@ -54,7 +54,7 @@ def blink(key):
     touchphat.led_off('B')
     touchphat.led_off('C')
     touchphat.led_off('D')
-    for i in range(0, 3):
+    for i in range(0, 2):
         touchphat.led_off(key)
         time.sleep(0.07)
         touchphat.led_on(key)
@@ -63,6 +63,7 @@ def blink(key):
     touchphat.led_off('B')
     touchphat.led_off('C')
     touchphat.led_off('D')
+    time.sleep(0.07)
 
 
 @touchphat.on_release(['Back', 'Enter'])
